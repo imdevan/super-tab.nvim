@@ -1,6 +1,13 @@
 # super-tab.nvim
 
-Minimal Neovim plugin super-tab. Ships one feature — printing "hello world" at the cursor — as a working example.
+A context-aware Neovim indentation plugin that improves standard code tabbing.
+
+## Features
+
+- **Standard & Relative Indentation**: Indents or outdents the entire line (similar to `>>` / `<<`) based on standard buffer settings (`shiftwidth`, `tabstop`, `expandtab`).
+- **Line-Above Alignment**: Automatically aligns the current line's indentation to match the line above if the current line is less indented (forward) or more indented (backward).
+- **Comment-Aware Tabbing**: Keeps comment characters (e.g. `//`, `#`) in their exact horizontal position and indents/outdents the code *after* the comment.
+- **Relative Multiline Block Tabbing**: When tabbing a visual selection of multiple lines, `super-tab` shifts all lines by the same relative amount to preserve the block's internal indentation structure (integrity).
 
 ## Installation
 
@@ -15,24 +22,30 @@ Minimal Neovim plugin super-tab. Ships one feature — printing "hello world" at
 
 ## Configuration
 
+Default options:
+
 ```lua
 {
   "imdevan/super-tab.nvim",
   opts = {
     keymaps = {
-      enabled = true,
+      enabled = true, -- Master switch for default keymaps
     },
+    respect_comments = true, -- Use commentstring to indent code inside comments
   },
 }
 ```
 
-## Keymaps
+## Default Keymaps
 
-| Key | Action |
-|-----|--------|
-| `<leader>hw` | Insert "hello world" at the cursor |
+| Key | Mode | Command | Action |
+|-----|------|---------|--------|
+| `<M->>` / `<M-gt>` | Normal, Visual | `SuperTab` | Indent / Align Forward |
+| `<M-<>` / `<M-lt>` | Normal, Visual | `SuperTabBack` | Outdent / Align Backward |
 
-Set `keymaps.enabled = false` to disable and define your own mapping:
+*Note: Both `<M->>` / `<M-<>` and `<M-gt>` / `<M-lt>` are mapped to ensure compatibility across all terminal emulators.*
+
+Set `keymaps.enabled = false` to disable and define your own mappings:
 
 ```lua
 {
@@ -40,7 +53,8 @@ Set `keymaps.enabled = false` to disable and define your own mapping:
   opts = { keymaps = { enabled = false } },
   config = function(_, opts)
     require("super-tab").setup(opts)
-    vim.keymap.set("n", "<leader>hw", "<cmd>HelloWorld<cr>")
+    vim.keymap.set("n", "<Tab>", "<cmd>SuperTab<cr>")
+    vim.keymap.set("n", "<S-Tab>", "<cmd>SuperTabBack<cr>")
   end,
 }
 ```
@@ -49,16 +63,16 @@ Set `keymaps.enabled = false` to disable and define your own mapping:
 
 | Command | Description |
 |---------|-------------|
-| `HelloWorld` | Insert "hello world" at the cursor |
+| `SuperTab` | Indents / aligns the current line or visual selection forward |
+| `SuperTabBack` | Outdents / aligns the current line or visual selection backward |
 
-## Running tests
+## Development / test
 
-Requires [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) on your runtime path (or a clone in `vendor/plenary.nvim`).
+Requires [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) on your runtime path.
+Just optional but recommended for convince 
 
 ```bash
-nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}"
-
-# or
-
-just test
+just test       # run in tests in headless nvim instance
+just install    # install local copy
+just reinstall  # uninstall and reinstalllocal copy
 ```
