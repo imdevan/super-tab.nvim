@@ -10,9 +10,7 @@ M.defaults = {
 	keymaps = {
 		enabled = true,
 	},
-	shadow = {
-		auto_attach = true,
-	},
+	respect_comments = true,
 }
 
 ---@type SuperTabConfig
